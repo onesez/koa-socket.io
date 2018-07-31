@@ -1,5 +1,7 @@
+var path = require('path');
 var koa = require('koa');
 var app = new koa();
+var static = require('koa-static');
 
 var server = require('http').createServer(app.callback());
 var io = require('socket.io')(server);
@@ -79,5 +81,7 @@ io.on('connection', (socket) => {
         }
     });
 });
+
+app.use(static(path.join(__dirname, 'public')));
 
 server.listen(1923);

@@ -1,28 +1,53 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Socket.IO Chat Example</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <ul class="pages">
-    <li class="chat page">
-      <div class="chatArea">
-        <ul class="messages"></ul>
-      </div>
-      <input class="inputMessage" placeholder="Type here..."/>
-    </li>
-    <li class="login page">
-      <div class="form">
-        <h3 class="title">What's your nickname?</h3>
-        <input class="usernameInput" type="text" maxlength="14" />
-      </div>
-    </li>
-  </ul>
+<html>
 
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/main.js"></script>
+<head>
+    <title>测试输入</title>
+</head>
+
+<body>
+    <div id="app">
+        <p>
+            测试输入：
+            <input v-model="question">
+        </p>
+        <p>{{ answer }}</p>
+    </div>
 </body>
+<!-- 因为 AJAX 库和通用工具的生态已经相当丰富，Vue 核心代码没有重复 -->
+<!-- 提供这些功能以保持精简。这也可以让你自由选择自己更熟悉的工具。 -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+<script>
+var watchExampleVM = new Vue({
+    el: '#app',
+    data: {
+        question: '',
+        answer: '答案'
+    },
+    watch: {
+        // 如果 `question` 发生改变，这个函数就会运行
+        question: function(newQuestion, oldQuestion) {
+            console.log(newQuestion, oldQuestion)
+            this.answer = '输入中...'
+            this.debouncedGetAnswer()
+        }
+    },
+    created: function() {
+        // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+        // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+        // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+        // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+        // 请参考：https://lodash.com/docs#debounce
+        this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+    },
+    methods: {
+        getAnswer: function() {
+            this.answer = '没有在输入'
+        }
+    }
+})
+</script>
+
 </html>

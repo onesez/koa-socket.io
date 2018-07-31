@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <title>中文输入</title>
+</head>
+
+<body>
+    <div id="app">
+        <input :value="message" @input="message = $event.target.value" @change="inputing">
+        <p>状态：{{status}}</p>
+        <p>the input is: {{message}}</p>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+<script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        status: '',
+        message: '',
+    },
+    created: function () {
+        // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+        // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+        // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+        // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+        // 请参考：https://lodash.com/docs#debounce
+        this.debouncedNoinput = _.debounce(this.noinput, 500)
+    },
+    methods: {
+        inputing($event) {
+            this.message = $event.target.value.toUpperCase()
+        },
+        noinput() {
+            this.status = '没有输入'
+        }
+    },
+    watch: {
+        // 如果 `message` 发生改变，这个函数就会运行
+        message: function (newVal, oldVal) {
+            this.status = '输入中...'
+            this.debouncedNoinput()
+        }
+    },
+})
+</script>
+
+</html>
